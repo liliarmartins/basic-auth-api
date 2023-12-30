@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  db:
+    container_name: jwt-auth-postgres
+    image: postgres:15.2-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: silly-password
+    volumes:
+      - ./db/data:/var/lib/postgresql/data
+    ports:
+      - 35432:5432
+
+  php:
+    container_name: jwt-auth-php
+    build: ./php
+    ports:
+      - '9002:9000'
+    depends_on:
+      - db
+    volumes:
+      - ./api/:/var/www/symfony:cached
+      - ./php/conf.d/xdebug.ini:/usr/local/etc/php/conf.d/zz-xdebug.ini
+      - ./php/conf.d/memory.ini:/usr/local/etc/php/conf.d/zz-memory.ini
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      RDS_USERNAME: postgres
+      RDS_PASSWORD: silly-password
+      # RDS_HOSTNAME is the db container name
+      RDS_HOSTNAME: jwt-auth-postgres
+      RDS_PORT: 5432
+
+  nginx:
+    container_name: jwt-auth-nginx
+    build: ./nginx
+    ports:
+      - '8080:80'
+    depends_on:
+      - php
+    volumes:
+      - ./api/:/var/www/symfony:cached
+      - ./nginx/logs/:/var/log/nginx:cached
