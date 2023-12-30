@@ -1,0 +1,4 @@
+###> docker ###
+/nginx/logs
+/db/data
+###< docker ###
