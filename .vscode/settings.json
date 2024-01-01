@@ -1,0 +1,10 @@
+{
+    "php-cs-fixer.executablePath": "${extensionPath}/php-cs-fixer.phar",
+    "php.suggest.basic": false,
+    "editor.quickSuggestions": { "comments": true },
+    "php-cs-fixer.rules": "@Symfony",
+    "[php]": {
+        "editor.defaultFormatter": "junstyle.php-cs-fixer",
+        "editor.formatOnSave": true
+    },
+}
