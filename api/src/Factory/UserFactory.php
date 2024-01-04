@@ -4,6 +4,7 @@ namespace App\Factory;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Zenstruck\Foundry\ModelFactory;
 use Zenstruck\Foundry\Proxy;
 use Zenstruck\Foundry\RepositoryProxy;
@@ -34,7 +35,7 @@ final class UserFactory extends ModelFactory
      *
      * @todo inject services if required
      */
-    public function __construct()
+    public function __construct(private UserPasswordHasherInterface $passwordHasher)
     {
         parent::__construct();
     }
@@ -47,9 +48,14 @@ final class UserFactory extends ModelFactory
     protected function getDefaults(): array
     {
         return [
-            'email' => self::faker()->text(180),
-            'password' => self::faker()->text(),
-            'roles' => [],
+            'email' => self::faker()->email,
+            'password' => '123456',
+            'roles' => [
+                'ROLE_CREATE_CLIENT',
+                'ROLE_READ_CLIENT',
+                'ROLE_UPDATE_CLIENT',
+                'ROLE_DELETE_CLIENT',
+            ],
         ];
     }
 
@@ -59,7 +65,12 @@ final class UserFactory extends ModelFactory
     protected function initialize(): self
     {
         return $this
-            // ->afterInstantiate(function(User $user): void {})
+            ->afterInstantiate(function (User $user): void {
+                $user->setPassword($this->passwordHasher->hashPassword(
+                    $user,
+                    $user->getPassword()
+                ));
+            })
         ;
     }
 
