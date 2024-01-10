@@ -13,21 +13,44 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
-            lazy: true
+        # main:
+        #     lazy: true
+        #     provider: app_user_provider
+
+        #     # activate different ways to authenticate
+        #     # https://symfony.com/doc/current/security.html#the-firewall
+
+        #     # https://symfony.com/doc/current/security/impersonating_user.html
+        #     # switch_user: true
+        api:
+            pattern: ^/api/
+            stateless: true
             provider: app_user_provider
+            jwt: ~
+            json_login:
+                check_path: auth # The name in routes.yaml is enough for mapping
+                username_path: email
+                password_path: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/api/auth, roles: PUBLIC_ACCESS }
+        - { path: ^/api/docs, roles: PUBLIC_ACCESS }
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
+
+    role_hierarchy:
+        ROLE_SUPER_ADMIN:
+            - ROLE_CREATE_CLIENT
+            - ROLE_READ_CLIENT
+            - ROLE_UPDATE_CLIENT
+            - ROLE_DELETE_CLIENT
 
 when@test:
     security:

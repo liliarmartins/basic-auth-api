@@ -16,7 +16,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-#[ApiResource(normalizationContext: ['groups' => ['user:read']], )]
+#[ApiResource(
+    normalizationContext: ['groups' => ['user:read']],
+    security: "is_granted('ROLE_USER')"
+)]
 #[GetCollection()]
 #[Get()]
 #[Post()]

@@ -1,5 +1,5 @@
 api_platform:
-    title: Hello API Platform
+    title: Basic JWT Authentication API
     version: 1.0.0
     formats:
         jsonld: ['application/ld+json']
@@ -16,3 +16,8 @@ api_platform:
             rfc_7807_compliant_errors: true
     event_listeners_backward_compatibility_layer: false
     keep_legacy_inflector: false
+    swagger:
+         api_keys:
+             JWT:
+                name: Authorization
+                type: header
