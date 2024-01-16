@@ -27,6 +27,9 @@ security:
             stateless: true
             provider: app_user_provider
             jwt: ~
+            entry_point: jwt
+            refresh_jwt:
+                check_path: /api/token/refresh
             json_login:
                 check_path: auth # The name in routes.yaml is enough for mapping
                 username_path: email
@@ -34,13 +37,13 @@ security:
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
-
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
         - { path: ^/api/auth, roles: PUBLIC_ACCESS }
+        - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
         - { path: ^/api/docs, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }

@@ -7,3 +7,7 @@
 auth:
     path: /api/auth
     methods: ['POST']
+
+jwt_refresh:
+    path: /api/token/refresh
+    methods: ['POST']
