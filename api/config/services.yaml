@@ -25,3 +25,9 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    ###> Api Platform Bidings ### 
+    App\State\NewUserProcessor:
+        bind:
+            $processor: '@api_platform.doctrine.orm.state.persist_processor'
+    ###< Api Platform Bidings ###

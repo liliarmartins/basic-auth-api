@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\UserRepository;
+use App\State\NewUserProcessor;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -16,10 +17,16 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-#[ApiResource(normalizationContext: ['groups' => ['user:read']])]
+#[ApiResource(
+    normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:write']]
+)]
 #[GetCollection(security: "is_granted('ROLE_SUPER_ADMIN')")]
 #[Get(security: "is_granted('ROLE_SUPER_ADMIN') or object == user")]
-#[Post(security: "is_granted('ROLE_SUPER_ADMIN')")]
+#[Post(
+    processor: NewUserProcessor::class,
+    security: "is_granted('ROLE_SUPER_ADMIN')"
+)]
 #[Patch(security: "is_granted('ROLE_SUPER_ADMIN') or object == user")]
 #[Delete(security: "is_granted('ROLE_SUPER_ADMIN')")]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -31,17 +38,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Groups('user:read')]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $email = null;
 
     #[ORM\Column]
-    #[Groups('user:read')]
+    #[Groups(['user:read', 'user:write'])]
     private array $roles = [];
 
     /**
      * @var string The hashed password
      */
-    #[ORM\Column]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $password = null;
 
     #[ORM\Column(length: 255, nullable: true)]
